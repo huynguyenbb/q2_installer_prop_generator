@@ -262,13 +262,22 @@ function configureFreshInstall() {
 
     # prefill for App Server only Installs, we are already assuming that we have a connection to the shared content to pull bbconfig data
     if [ "${INSTALLOPTION}" -eq 2 ] && [[ -f "${BBCONFIG}" ]]; then
-            # set value based on bb-config.properties.original
-            COLLABSERVERHOSTNAME=$(grep 'bbconfig.collabserver.fullhostname.default=' ${BBCONFIG} | sed 's/bbconfig.collabserver.fullhostname.default=//')
-            DBHOSTNAME=$(grep 'bbconfig.database.server.fullhostname=' ${BBCONFIG} | sed 's/bbconfig.database.server.fullhostname=//')
-            DBPORT=$(grep 'bbconfig.database.server.portnumber=' ${BBCONFIG} | sed 's/bbconfig.database.server.portnumber=//')
-            DBINSTNAME=$(grep 'bbconfig.database.server.instancename=' ${BBCONFIG} | sed 's/bbconfig.database.server.instancename=//')
-            DBDATADIR=$(grep 'bbconfig.database.datadir=' ${BBCONFIG} | sed 's/bbconfig.database.datadir=//')
-            DBSYSPASSWD=$(grep 'bbconfig.database.server.systemuserpassword=' ${BBCONFIG} | sed 's/bbconfig.database.server.systemuserpassword=//')
+        # set value based on bb-config.properties.original
+        COLLABSERVERHOSTNAME=$(grep 'bbconfig.collabserver.fullhostname.default=' ${BBCONFIG} | sed 's/bbconfig.collabserver.fullhostname.default=//')
+        DBHOSTNAME=$(grep 'bbconfig.database.server.fullhostname=' ${BBCONFIG} | sed 's/bbconfig.database.server.fullhostname=//')
+        DBPORT=$(grep 'bbconfig.database.server.portnumber=' ${BBCONFIG} | sed 's/bbconfig.database.server.portnumber=//')
+        DBINSTNAME=$(grep 'bbconfig.database.server.instancename=' ${BBCONFIG} | sed 's/bbconfig.database.server.instancename=//')
+        DBDATADIR=$(grep 'bbconfig.database.datadir=' ${BBCONFIG} | sed 's/bbconfig.database.datadir=//')    
+    fi
+
+    # If performing App only Install or Upgrade, let's copy the DBSYSPASSWD
+    if [ "${INSTALLOPTION}" -eq 2 ] || [ "${INSTALLOPTION}" -eq 4 ] && [[ -f "${BBCONFIG}" ]]; then
+    	DBSYSPASSWD=$(grep 'bbconfig.database.server.systemuserpassword=' ${BBCONFIG} | sed 's/bbconfig.database.server.systemuserpassword=//')
+    	DBBBLEARNPASSWD=$(grep 'antargs.default.vi.db.password=' ${BBCONFIG} | sed 's/antargs.default.vi.db.password=//')
+    	DBBBLEARNSTATSPASSWD=$(grep 'antargs.default.vi.stats.db.password=' ${BBCONFIG} | sed 's/antargs.default.vi.stats.db.password=//')
+		DBBBLEARNREPORTPASSWD=$(grep 'antargs.default.vi.report.user.password=' ${BBCONFIG} | sed 's/antargs.default.vi.report.user.password=//')
+		DBBBLEARNADMINPASSWD=$(grep 'bbconfig.database.admin.password=' ${BBCONFIG} | sed 's/bbconfig.database.admin.password=//')
+		DBBBLEARNCMSPASSWD=$(grep 'bbconfig.cs.db.cms-user.pass=' ${BBCONFIG} | sed 's/bbconfig.cs.db.cms-user.pass=//')
     fi
 
     # Required for a Full Install
