@@ -84,7 +84,6 @@ function configureFreshInstall() {
     unset JDKPATH
     unset APPSERVERFULLHOSTNAME
     unset APPSERVERMACHINENAME
-    unset COLLABSERVERHOSTNAME
     unset SMTPHOSTNAME
     unset FRONTENDHOSTNAME
     unset DBHOSTNAME
@@ -263,7 +262,6 @@ function configureFreshInstall() {
     # prefill for App Server only Installs, we are already assuming that we have a connection to the shared content to pull bbconfig data
     if [ "${INSTALLOPTION}" -eq 2 ] && [[ -f "${BBCONFIG}" ]]; then
         # set value based on bb-config.properties.original
-        COLLABSERVERHOSTNAME=$(grep 'bbconfig.collabserver.fullhostname.default=' ${BBCONFIG} | sed 's/bbconfig.collabserver.fullhostname.default=//')
         DBHOSTNAME=$(grep 'bbconfig.database.server.fullhostname=' ${BBCONFIG} | sed 's/bbconfig.database.server.fullhostname=//')
         DBPORT=$(grep 'bbconfig.database.server.portnumber=' ${BBCONFIG} | sed 's/bbconfig.database.server.portnumber=//')
         DBINSTNAME=$(grep 'bbconfig.database.server.instancename=' ${BBCONFIG} | sed 's/bbconfig.database.server.instancename=//')
@@ -282,15 +280,6 @@ function configureFreshInstall() {
 
     # Required for a Full Install
     if [[ "${INSTALLOPTION}" -eq 1 ]]; then
-
-        # Enter Collab Server Full Hostname
-        while [[ -z "${COLLABSERVERHOSTNAME}" ]]; do
-            read -p "Collab Server Hostname [i.e. $APPSERVERFULLHOSTNAME]*: " COLLABSERVERHOSTNAME
-
-            if [[ "${INSTALLOPTION}" -eq 1 ]] && [[ -z "${COLLABSERVERHOSTNAME}" ]]; then
-                COLLABSERVERHOSTNAME=${APPSERVERFULLHOSTNAME}
-            fi
-        done
 
         # Enter SMTP Server Full Hostname
         while [[ -z "${SMTPHOSTNAME}" ]]; do
@@ -312,12 +301,7 @@ function configureFreshInstall() {
         # Frontend Port should always be 443
         CONFIGPARAMETERS+=("bbconfig.frontend.portnumber=${FRONTENDPORT}")
 
-    fi
-
-    # add to CONFIGPARAMETERS ARRAY, collab, which at this point should already be set no matter the method, unless option 3/4
-    if [[ "${INSTALLOPTION}" -eq 1 ]] || [[ "${INSTALLOPTION}" -eq 2 ]]; then
-        CONFIGPARAMETERS+=("bbconfig.collabserver.fullhostname.default=${COLLABSERVERHOSTNAME}")
-    fi  
+    fi 
 
     # Database configuration details for Full Install
     if [[ "${INSTALLOPTION}" -eq 1 ]]; then
